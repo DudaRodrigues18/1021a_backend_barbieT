@@ -1,6 +1,8 @@
 import express, {Request} from 'express';
+import BancoMongoDB from './infra/banco/banco-mongodb'
+import ListarFilme from './aplicacao/listar-filme.use-case'
 
-// Cria uma instância do aplicativo Express
+const bancoMongoDB = new BancoMongoDB()
 const app = express();
 app.use(express.json())
 
@@ -12,13 +14,10 @@ type Filme = {
 }
 let filmes_repositorio:Filme[] = []
 
-
-// Define uma rota padrão
-app.get('/filmes/:id', (req, res) => {
-    const id = parseInt(req.params.id)
-    const filme = filmes_repositorio.find(filme => filme.id === id)
-    if (!filme) res.status(404).send()
-    res.send(filme)        
+app.get('/filmes', async (req, res) => {
+    const listarFilme = new ListarFilme(bancoMongoDB)
+    const filmes = await listarFilme.execute()
+    res.status(200).send(filmes)
 });
 
 app.post('/filmes', (req:Request, res) => {
