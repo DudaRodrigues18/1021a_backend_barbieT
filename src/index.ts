@@ -10,8 +10,7 @@ app.use(express.json())
 app.get('/filmes', async (req, res) => {
     const listarFilme = new ListarFilme(bancoMongoDB)
     const filmes = await listarFilme.execute()
-    res.status(200).send(filmes)
-    res.status(200).send(filmes)        
+    res.status(200).send(filmes)    
 });
 
 app.post('/filmes', (req:Request, res) => {
