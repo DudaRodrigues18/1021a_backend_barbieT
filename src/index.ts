@@ -24,7 +24,6 @@ app.post('/filmes', async (req:Request, res) => {
     }
     const salvaFilme = new SalvaFilme(bancoMongoDB)
     const result = await salvaFilme.execute(filme)
-    console.log(result)
     if(!result) return res.status(400).send({"mensagem":"Erro ao cadastrar filme"})
     filmes_repositorio.push(filme)
     res.status(201).send(filme)
