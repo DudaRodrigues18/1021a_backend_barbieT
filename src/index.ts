@@ -1,6 +1,7 @@
 import express, {Request} from 'express';
 import BancoMongoDB from './infra/banco/banco-mongodb'
 import ListarFilme from './aplicacao/listar-filme.use-case'
+import SalvaFilme from './aplicacao/salva-filme.use-case'
 
 const bancoMongoDB = new BancoMongoDB()
 const app = express();
@@ -13,14 +14,18 @@ app.get('/filmes', async (req, res) => {
     res.status(200).send(filmes)    
 });
 
-app.post('/filmes', (req:Request, res) => {
-    const {id, titulo, descricao, foto} = req.body
+app.post('/filmes', async (req:Request, res) => {
+    const {id, titulo, descricao, foto} = req.body;
     const filme:Filme = {
         id,
         titulo,
         descricao,
-        foto,
+        foto
     }
+    const salvaFilme = new SalvaFilme(bancoMongoDB)
+    const result = await salvaFilme.execute(filme)
+    console.log(result)
+    if(!result) return res.status(400).send({"mensagem":"Erro ao cadastrar filme"})
     filmes_repositorio.push(filme)
     res.status(201).send(filme)
 });
@@ -39,7 +44,7 @@ app.delete('/filmes/:id', (req, res) => {
 app.listen(3000, () => {
     console.log('Servidor iniciado na porta 3000');
 });
-
+//
 
 type Filme = {
     id: number,
@@ -47,5 +52,6 @@ type Filme = {
     descricao: string,
     foto: string,
 }
+
 let filmes_repositorio:Filme[] = []
 
